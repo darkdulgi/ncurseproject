@@ -81,6 +81,7 @@ int main()
     while (menubreak)
     {
         print_map(map, curx, cury);
+        set_current_nation(curx,cury,selectnation);
         print_submenu(submenu, c, selectnation);
         c = wgetch(map);
         switch (c)
@@ -93,15 +94,19 @@ int main()
             break;
         case KEY_RIGHT:
             curx++;
+            if(curx>100) curx=0;
             break;
         case KEY_LEFT:
             curx--;
+            if(curx<0) curx=99;
             break;
         case KEY_DOWN:
             cury++;
+            if(cury>30) cury=0;
             break;
         case KEY_UP:
             cury--;
+            if(cury<0) cury=29;
             break;
         }
     }
@@ -150,6 +155,9 @@ void print_submenu(WINDOW *submenu, int input, int n)
     wprintw(submenu,"%s\n",nationlist[n].name);
     wprintw(submenu,"Captial: %s\n",nationlist[n].capital);
     wprintw(submenu,"Population: %d\n",nationlist[n].population);
+    wprintw(submenu,"GDP: $%d Billion\n",nationlist[n].GDP);
+    wprintw(submenu,"GDP/p: $%d\n",nationlist[n].GDPpc);
+    wprintw(submenu,"Government: %s\n",ideol(nationlist[n].ideol).c_str());
     refresh();
     wrefresh(submenu);
 }

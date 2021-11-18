@@ -1,21 +1,48 @@
 #include "nation.hpp"
 
-string ideol(int n){
+string ideol(int n)
+{
     switch (n)
     {
-        case 1:
+    case 1:
         return "Democracy";
-        case 2:
+    case 2:
         return "Authoritarian Democracy";
-        case 3:
+    case 3:
         return "One-Party Dictatorship";
-        case 4:
+    case 4:
         return "Absolute Monarchy";
-        case 5:
+    case 5:
         return "Military Government";
-        case 6:
+    case 6:
         return "Anarchy";
     }
+}
+
+void set_current_nation(int x, int y, int &nat)
+{
+    if (x >= 45 && x <= 46 && y >= 6 && y <= 7)
+        nat = 0;
+    else if (x >= 47 && x <= 48 && y == 8)
+        nat = 1;
+    else if (x == 44 && y >= 6 && y <= 7)
+        nat = 2;
+    else if (x == 47 && y == 7)
+        nat = 3;
+    else if (x >= 41 && x <= 42 && y == 4)
+        nat = 4;
+    else if (x == 48 && y == 7)
+        nat = 5;
+    else if (x == 48 && y == 7)
+        nat = 6;
+    else if (x >= 50 && x <= 51 && y == 7)
+        nat = 7;
+    else if (x == 50 && y == 8)
+        nat = 8;
+    else if (x >= 50 && x <= 51 && y >= 5 && y <= 6)
+        nat = 9;
+    else if (x >= 48 && x <= 49 && y == 5)
+        nat = 10;
 }
 
 void print_map(WINDOW *win, int x, int y)
@@ -53,7 +80,7 @@ void print_map(WINDOW *win, int x, int y)
         "                          :M                                                                        "};
     for (int i = 0; i < 30; i++)
         wprintw(win, c[i]);
-
+    mvwprintw(win, 29, 1, "x:%d,y:%d", x, y);
     WINDOW *highlight;
     highlight = subwin(win, 1, 1, y, x);
     wbkgd(highlight, COLOR_PAIR(3));
@@ -62,106 +89,99 @@ void print_map(WINDOW *win, int x, int y)
     wrefresh(highlight);
 }
 
-void file_download(nation nationlist[]){
+void file_download(nation nationlist[])
+{
     int fd = open("./nationinfo", O_RDONLY);
     if (fd == -1)
     {
         cout << "nationinfo file error\n";
         exit(1);
     }
-    
+
     for (int i = 0; i < 300; i++)
     {
         char buf;
         char cbuf[20];
-        int loc=0;
-        while(1){
-            read(fd,&buf,1);
-            if(buf=='\n'){
-                loc=0;
+        int loc = 0;
+        while (1)
+        {
+            read(fd, &buf, 1);
+            if (buf == '\n')
+            {
+                loc = 0;
                 break;
             }
-            nationlist[i].name[loc]=buf;
+            nationlist[i].name[loc] = buf;
             loc++;
         }
-        while(1){
-            read(fd,&buf,1);
-            if(buf=='\n'){
-                loc=0;
+        while (1)
+        {
+            read(fd, &buf, 1);
+            if (buf == '\n')
+            {
+                loc = 0;
                 break;
             }
-            nationlist[i].capital[loc]=buf;
+            nationlist[i].capital[loc] = buf;
             loc++;
         }
-        while(1){
-            read(fd,&buf,1);
-            if(buf=='\n'){
-                loc=0;
-                nationlist[i].population=atoi(cbuf);
-                memset(cbuf,0,20);
+        while (1)
+        {
+            read(fd, &buf, 1);
+            if (buf == '\n')
+            {
+                loc = 0;
+                nationlist[i].population = atoi(cbuf);
+                memset(cbuf, 0, 20);
                 break;
             }
-            cbuf[loc]=buf;
+            cbuf[loc] = buf;
             loc++;
         }
-        while(1){
-            read(fd,&buf,1);
-            if(buf==' '){
-                loc=0;
-                nationlist[i].locx=atoi(cbuf);
-                memset(cbuf,0,20);
+        while (1)
+        {
+            read(fd, &buf, 1);
+            if (buf == '\n')
+            {
+                loc = 0;
+                nationlist[i].GDP = atoi(cbuf);
+                memset(cbuf, 0, 20);
                 break;
             }
-            cbuf[loc]=buf;
+            cbuf[loc] = buf;
             loc++;
         }
-        while(1){
-            read(fd,&buf,1);
-            if(buf=='\n'){
-                loc=0;
-                nationlist[i].locy=atoi(cbuf);
-                memset(cbuf,0,20);
+        while (1)
+        {
+            read(fd, &buf, 1);
+            if (buf == '\n')
+            {
+                loc = 0;
+                nationlist[i].GDPpc = atoi(cbuf);
+                memset(cbuf, 0, 20);
                 break;
             }
-            cbuf[loc]=buf;
+            cbuf[loc] = buf;
             loc++;
         }
-        while(1){
-            read(fd,&buf,1);
-            if(buf=='\n'){
-                loc=0;
-                nationlist[i].GDP=atoi(cbuf);
-                memset(cbuf,0,20);
+        while (1)
+        {
+            read(fd, &buf, 1);
+            if (buf == '\n')
+            {
+                loc = 0;
+                nationlist[i].ideol = atoi(cbuf);
+                memset(cbuf, 0, 20);
                 break;
             }
-            cbuf[loc]=buf;
+            cbuf[loc] = buf;
             loc++;
         }
-        while(1){
-            read(fd,&buf,1);
-            if(buf=='\n'){
-                loc=0;
-                nationlist[i].GDPpc=atoi(cbuf);
-                memset(cbuf,0,20);
-                break;
-            }
-            cbuf[loc]=buf;
-            loc++;
-        }
-        while(1){
-            read(fd,&buf,1);
-            if(buf=='\n'){
-                loc=0;
-                nationlist[i].ideol=atoi(cbuf);
-                memset(cbuf,0,20);
-                break;
-            }
-            cbuf[loc]=buf;
-            loc++;
-        }
-        read(fd,&buf,1);
-        read(fd,&buf,1);
-        if(read(fd,&buf,1)==0) break;
+        read(fd, &buf, 1);
+        read(fd, &buf, 1);
+        read(fd, &buf, 1);
+        read(fd, &buf, 1);
+        if (read(fd, &buf, 1) == 0)
+            break;
     }
 }
-
