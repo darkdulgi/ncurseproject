@@ -15,7 +15,7 @@ struct nation
     unsigned int population;
     int GDP;
     int GDPpc;
-    int ideol;
+    bool ideol;
 };
 
 void set_current_nation(int, int, int &);
@@ -23,4 +23,3 @@ void file_download(nation[]);
 void print_map(WINDOW *, int, int);
 void print_menu(WINDOW *, int &);
 void print_submenu(WINDOW *, int, int);
-string ideol(int);
