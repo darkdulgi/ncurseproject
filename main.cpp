@@ -68,7 +68,7 @@ int main()
     wrefresh(win_menu);
 
     map = newwin(30, 100, 0, 0);
-    submenu = newwin(30, 25, 0, 100);
+    submenu = newwin(30, 30, 0, 100);
     wbkgd(map, COLOR_PAIR(1));
     wbkgd(submenu, COLOR_PAIR(2));
 
