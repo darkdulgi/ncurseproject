@@ -156,10 +156,12 @@ void print_submenu(WINDOW *submenu, int input, int n)
     wprintw(submenu,"%s\n",nationlist[n].name);
     wprintw(submenu,"Captial: %s\n",nationlist[n].capital);
     wprintw(submenu,"Population: %d\n",nationlist[n].population);
-    wprintw(submenu,"GDP: $%d Billion\n",nationlist[n].GDP);
-    wprintw(submenu,"GDP/p: $%d\n",nationlist[n].GDPpc);
+    if(nationlist[n].GDP==0) wprintw(submenu,"GDP: -");
+    else wprintw(submenu,"GDP: $%d(100 Million)\n",nationlist[n].GDP);
+    if(nationlist[n].GDPpc==0) wprintw(submenu,"GDP/c: -\n");
+    else wprintw(submenu,"GDP/c: $%d\n",nationlist[n].GDPpc);
     if(nationlist[n].ideol) wprintw(submenu,"UN Recognised\n");
-    else wprintw(submenu,"UNRECOGNISED STATE\n");
+    else wprintw(submenu,"NOT RECOGNISED STATE\n");
     }
     refresh();
     wrefresh(submenu);
