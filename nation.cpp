@@ -20,18 +20,18 @@ void set_current_nation(int x, int y, int &nat)
         "                    AAAAAAAAA      F H HHH TT     R   MPPPPPPPQQQQQMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM",
         "                                FFFHHHHHHHHHHHRRRRRRRRRRPPPPQQQQQQQQMMMMMMMMMMMMMMMMMMMMMMMM        ",
         "                  BBB  B   BDDDDFHHHHHHHHHHHHHRRRRRRRRRRRRQQQQQQQQQSSSSMMMMMMMMMMMMMMMMMMM          ",
-        "                    BBBBBBBBBBDDGHHHHHHHHHHHHHRRRRRRRRRRRRSSSSSSSSSSSSSSSSSSSSSMMMMMMMMMMM          ",
-        "                     BBBBBBBBBBBBBHHHHHHHH#######RRRRRRRRSSSSSSSSSSSSSSSSSSSSSSSSSMMMMMMMMMMM       ",
-        "       ######       BBBBBBBBBBBBBIIII###################SSSSSSSSSSSSSSSSSSSSSSSSSMMMMMMMMMMMMM      ",
-        "      ###########  BBBBBBBBBBBBB##################################SSSSSSSSSS   MMMMMMMMMMMMM        ",
-        "   ####################BBB BBBB### #####   ########################     SSS   MMMMMMMMMMMMMMMM      ",
-        "   #####################            #####   #####################                 MMMMMMMMMMMMMM    ",
-        "   ###############               #    ####      ################                      ############# ",
-        "      ##########               ###       ####     ##############       ######     # ############ ## ",
-        "                               ##          # #     #####     ###############################        ",
-        "                                       ### #         ####     #######################               ",
-        "                                        #             #          ###   ####   #                     ",
-        "                                                         ###         ##                             ",
+        "                    BBBBBBBBBBDDGHHHHHHHHHHHUUURRRRRRRRRRRSSSSSSSSSSSSSSSSSSSSSMMMMMMMMMMM          ",
+        "                     BBBBBBBBBBBBBHHHHHHHHUUUUUUURRRRRRRRSSSSSSSSSSSSSSSSSSSSSSSSpMMMMMMMMMMM       ",
+        "       yyyyyy       BBBBBBBBBBBBBIIIIIrWWWWWWWWWVVVVVVVVSSSSSSSSSSSSSSSSSSSSSSSSqMMMMMMMMMMMMM      ",
+        "      zzzyyyyyyyy  BBBBBBBBBBBBBvvvvvvvvvvv```XXXXXXXXXXYYYYYYYYZ[SSSSSSSSSS   MMMMMMMMMMMMM        ",
+        "   zzzzyyyyyyyyyyyyyyyuBBB BBBtvvv vvvs#   ```_____XXXXYYYYYYYYYZZS     SSS   MMMMMMMMMMMMMMMM      ",
+        "   zzzyyyyyyyyyyyyyyyyyy            vvvvv   ___aaaa^^^^YYYYYYYYYY                 MMMoMMMnMMMMMM    ",
+        "   zzyyyyyyyyyyyyy               B    vwvv      _abbc^^]]]]]]]]]                      jjjjjjjllllll ",
+        "      yyyyyyyyyy               vvv       vvvv     eedddffff]]]gg       gggggg     g gggkkkkmllll ll ",
+        "                               vv          v v     effff     gggggggggggggggggggggggggggllkk        ",
+        "                                       vvv v         ffff     ggggggggggggggggggggggg               ",
+        "                                        v             f          ggg   gggg   g                     ",
+        "                                            x            fff         hi                             ",
         "                                                                                                    "};
     if(c[y][x]>=65) nat=c[y][x]-65;
     else if(c[y][x]==' ') nat=-1;
@@ -69,7 +69,7 @@ void print_map(WINDOW *win, int x, int y)
         "                               ##          # #     #####     ###############################        ",
         "                                       ### #         ####     #######################               ",
         "                                        #             #          ###   ####   #                     ",
-        "                                                         ###         ##                             ",
+        "                                            #            ###         ##                             ",
         "                                                                                                    "};
     for (int i = 0; i < 31; i++)
         wprintw(win, c[i]);
@@ -82,17 +82,13 @@ void print_map(WINDOW *win, int x, int y)
     wrefresh(highlight);
 }
 
-void file_download(nation nationlist[])
+//void file_download(nation nationlist[])
+void file_download(vector<nation> &nationlist)
 {
     int fd = open("./nationinfo", O_RDONLY);
-    if (fd == -1)
-    {
-        cout << "nationinfo file error\n";
-        exit(1);
-    }
 
-    for (int i = 0; i < 300; i++)
-    {
+    while(1){
+        nation temp={"","",0,0,0,0};
         char buf;
         char cbuf[20];
         int loc = 0;
@@ -104,7 +100,7 @@ void file_download(nation nationlist[])
                 loc = 0;
                 break;
             }
-            nationlist[i].name[loc] = buf;
+            temp.name[loc] = buf;
             loc++;
         }
         while (1)
@@ -115,7 +111,7 @@ void file_download(nation nationlist[])
                 loc = 0;
                 break;
             }
-            nationlist[i].capital[loc] = buf;
+            temp.capital[loc] = buf;
             loc++;
         }
         while (1)
@@ -124,7 +120,7 @@ void file_download(nation nationlist[])
             if (buf == '\n')
             {
                 loc = 0;
-                nationlist[i].population = atoi(cbuf);
+                temp.population = atoi(cbuf);
                 memset(cbuf, 0, 20);
                 break;
             }
@@ -137,7 +133,7 @@ void file_download(nation nationlist[])
             if (buf == '\n')
             {
                 loc = 0;
-                nationlist[i].GDP = atoi(cbuf);
+                temp.GDP = atoi(cbuf);
                 memset(cbuf, 0, 20);
                 break;
             }
@@ -150,7 +146,7 @@ void file_download(nation nationlist[])
             if (buf == '\n')
             {
                 loc = 0;
-                nationlist[i].GDPpc = atoi(cbuf);
+                temp.GDPpc = atoi(cbuf);
                 memset(cbuf, 0, 20);
                 break;
             }
@@ -163,13 +159,14 @@ void file_download(nation nationlist[])
             if (buf == '\n')
             {
                 loc = 0;
-                nationlist[i].ideol = atoi(cbuf);
+                temp.ideol = atoi(cbuf);
                 memset(cbuf, 0, 20);
                 break;
             }
             cbuf[loc] = buf;
             loc++;
         }
+        nationlist.push_back(temp);
         read(fd, &buf, 1);
         read(fd, &buf, 1);
         read(fd, &buf, 1);
