@@ -35,7 +35,9 @@ int main()
     init_pair(1, COLOR_WHITE, COLOR_BLUE);
     init_pair(2, COLOR_WHITE, COLOR_CYAN);
     init_pair(3, COLOR_WHITE, COLOR_RED);
-    init_pair(4, COLOR_WHITE, COLOR_MAGENTA);
+    init_pair(4, COLOR_WHITE, COLOR_BLACK);
+    init_pair(5, COLOR_RED, COLOR_WHITE);
+    init_pair(6, COLOR_GREEN, COLOR_WHITE);
     wbkgd(win_menu, COLOR_PAIR(1));
     box(win_menu, 0, 0);
     keypad(win_menu, 1);
@@ -90,7 +92,7 @@ int main()
     
     while (menubreak)
     {
-        print_map(map, curx, cury);
+        print_map(map, curx, cury, nation1, nation2);
         set_current_nation(curx, cury, selectnation);
         print_submenu(submenu, c, selectnation, nation1, nation2);
         c = wgetch(map);

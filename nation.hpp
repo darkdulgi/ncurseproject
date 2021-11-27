@@ -20,8 +20,7 @@ struct nation
 };
 
 void set_current_nation(int, int, int &);
-//void file_download(nation[]);
 void file_download(vector<nation> &);
-void print_map(WINDOW *, int, int);
+void print_map(WINDOW *, int, int, int, int);
 void print_menu(WINDOW *, int &);
 void print_submenu(WINDOW *, int, int, int, int);
