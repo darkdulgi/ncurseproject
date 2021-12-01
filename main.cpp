@@ -33,11 +33,13 @@ int main()
     WINDOW *keyintro;
     win_menu = newwin(HEIGHT, WIDTH, 0, 0);
     init_pair(1, COLOR_WHITE, COLOR_BLUE);
-    init_pair(2, COLOR_WHITE, COLOR_CYAN);
+    init_pair(2, COLOR_WHITE, COLOR_MAGENTA);
     init_pair(3, COLOR_WHITE, COLOR_RED);
     init_pair(4, COLOR_WHITE, COLOR_BLACK);
     init_pair(5, COLOR_RED, COLOR_WHITE);
     init_pair(6, COLOR_GREEN, COLOR_WHITE);
+    init_pair(7, COLOR_BLACK, COLOR_YELLOW);
+    init_pair(8, COLOR_WHITE, COLOR_GREEN);
     wbkgd(win_menu, COLOR_PAIR(1));
     box(win_menu, 0, 0);
     keypad(win_menu, 1);
@@ -74,12 +76,12 @@ int main()
 
     map = newwin(30, 100, 0, 0);
     submenu = newwin(30, 30, 0, 100);
-    keyintro = newwin(1,100,30,0);
+    keyintro = newwin(1, 100, 30, 0);
     wbkgd(map, COLOR_PAIR(1));
     wbkgd(submenu, COLOR_PAIR(2));
     wbkgd(keyintro, COLOR_PAIR(4));
 
-    wprintw(keyintro," Space : select nations | z : clear selected nations | q : quit");
+    wprintw(keyintro, " Space : select nations | z : clear selected nations | q : quit");
     wrefresh(keyintro);
     keypad(win_menu, 0);
     keypad(map, 1);
@@ -89,7 +91,7 @@ int main()
     int c = 0;
     int nation1 = -1;
     int nation2 = -1;
-    
+
     while (menubreak)
     {
         print_map(map, curx, cury, nation1, nation2);
@@ -202,10 +204,57 @@ void print_submenu(WINDOW *submenu, int input, int n, int n1, int n2)
             wprintw(submenu, "\n");
     }
     wprintw(submenu, "==============================");
-    if (n1 != -1)
-        wprintw(submenu, "%s\n", nationlist[n1].name);
-    if (n2 != -1)
-        wprintw(submenu, "%s\n", nationlist[n2].name);
+    if (n1 != -1){
+        wprintw(submenu, "Selected nation ");
+        wattron(submenu, COLOR_PAIR(3));
+        wprintw(submenu, "1");
+        wattroff(submenu, COLOR_PAIR(3));
+        wprintw(submenu, "\n>> %s\n", nationlist[n1].name);
+    }
+    if (n2 != -1){
+        wprintw(submenu, "Selected nation ");
+        wattron(submenu, COLOR_PAIR(8));
+        wprintw(submenu, "2");
+        wattroff(submenu, COLOR_PAIR(8));
+        wprintw(submenu, "\n>> %s\n", nationlist[n2].name);
+    }
+    if (n1 != -1 && n2 != -1)
+    {
+        wattron(submenu, COLOR_PAIR(7));
+        wprintw(submenu, "\n>>>>>>>>> COMPARISON <<<<<<<<<");
+        wattroff(submenu, COLOR_PAIR(7));
+        wprintw(submenu, "Population\n");
+        if (nationlist[n1].population > nationlist[n2].population)
+        {
+            wprintw(submenu, "%d\n", nationlist[n1].population);
+            wattron(submenu, COLOR_PAIR(3));
+            for (int i = 0; i < 20; i++)
+                wprintw(submenu, " ");
+            wattroff(submenu, COLOR_PAIR(3));
+            wprintw(submenu, "\n%d\n", nationlist[n2].population);
+            wattron(submenu, COLOR_PAIR(8));
+            if (20 * nationlist[n2].population / nationlist[n1].population == 0)
+                wprintw(submenu, " ");
+            for (int i = 0; i < 20 * nationlist[n2].population / nationlist[n1].population; i++)
+                wprintw(submenu, " ");
+            wattroff(submenu, COLOR_PAIR(8));
+        }
+        else
+        {
+            wprintw(submenu, "%d\n", nationlist[n1].population);
+            wattron(submenu, COLOR_PAIR(3));
+            if (20 * nationlist[n1].population / nationlist[n2].population == 0)
+                wprintw(submenu, " ");
+            for (int i = 0; i < 20 * nationlist[n1].population / nationlist[n2].population; i++)
+                wprintw(submenu, " ");
+            wattroff(submenu, COLOR_PAIR(3));
+            wprintw(submenu, "\n%d\n", nationlist[n2].population);
+            wattron(submenu, COLOR_PAIR(8));
+            for (int i = 0; i < 20; i++)
+                wprintw(submenu, " ");
+            wattroff(submenu, COLOR_PAIR(8));
+        }
+    }
     refresh();
     wrefresh(submenu);
 }
