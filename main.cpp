@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <string.h>
 #include <unistd.h>
+#include <signal.h>
 #include <vector>
 #include "nation.hpp"
 
@@ -15,11 +16,13 @@ using namespace std;
 char *title = " ######   #######  ##     ## ##    ## ######## ########  ##    ##         #### ##    ## ########  #######  \n##    ## ##     ## ##     ## ###   ##    ##    ##     ##  ##  ##           ##  ###   ## ##       ##     ## \n##       ##     ## ##     ## ####  ##    ##    ##     ##   ####            ##  ####  ## ##       ##     ## \n##       ##     ## ##     ## ## ## ##    ##    ########     ##    #######  ##  ## ## ## ######   ##     ## \n##       ##     ## ##     ## ##  ####    ##    ##   ##      ##             ##  ##  #### ##       ##     ## \n##    ## ##     ## ##     ## ##   ###    ##    ##    ##     ##             ##  ##   ### ##       ##     ## \n ######   #######   #######  ##    ##    ##    ##     ##    ##            #### ##    ## ##        #######  \n";
 char *age[] = {"Europe", "QUIT"};
 
-//nation nationlist[300];
 vector<nation> nationlist;
+
+void mysig(int);
 
 int main()
 {
+    signal(SIGINT, mysig);
     file_download(nationlist);
     initscr();
     start_color();
@@ -40,6 +43,7 @@ int main()
     init_pair(6, COLOR_GREEN, COLOR_WHITE);
     init_pair(7, COLOR_BLACK, COLOR_YELLOW);
     init_pair(8, COLOR_WHITE, COLOR_GREEN);
+    init_pair(9, COLOR_BLACK, COLOR_CYAN);
     wbkgd(win_menu, COLOR_PAIR(1));
     box(win_menu, 0, 0);
     keypad(win_menu, 1);
@@ -70,7 +74,6 @@ int main()
         endwin();
         exit(0);
     }
-    menubreak = 1;
     wclear(win_menu);
     wrefresh(win_menu);
 
@@ -92,7 +95,7 @@ int main()
     int nation1 = -1;
     int nation2 = -1;
 
-    while (menubreak)
+    while (1)
     {
         print_map(map, curx, cury, nation1, nation2);
         set_current_nation(curx, cury, selectnation);
@@ -101,7 +104,7 @@ int main()
         switch (c)
         {
         case 'q':
-            menubreak = 0;
+            kill(getpid(), SIGINT);
             break;
         case KEY_RIGHT:
             curx++;
@@ -204,14 +207,16 @@ void print_submenu(WINDOW *submenu, int input, int n, int n1, int n2)
             wprintw(submenu, "\n");
     }
     wprintw(submenu, "==============================");
-    if (n1 != -1){
+    if (n1 != -1)
+    {
         wprintw(submenu, "Selected nation ");
         wattron(submenu, COLOR_PAIR(3));
         wprintw(submenu, "1");
         wattroff(submenu, COLOR_PAIR(3));
         wprintw(submenu, "\n>> %s\n", nationlist[n1].name);
     }
-    if (n2 != -1){
+    if (n2 != -1)
+    {
         wprintw(submenu, "Selected nation ");
         wattron(submenu, COLOR_PAIR(8));
         wprintw(submenu, "2");
@@ -223,7 +228,7 @@ void print_submenu(WINDOW *submenu, int input, int n, int n1, int n2)
         wattron(submenu, COLOR_PAIR(7));
         wprintw(submenu, "\n>>>>>>>>> COMPARISON <<<<<<<<<");
         wattroff(submenu, COLOR_PAIR(7));
-        wprintw(submenu, "Population\n");
+        wprintw(submenu, "> Population\n");
         if (nationlist[n1].population > nationlist[n2].population)
         {
             wprintw(submenu, "%d\n", nationlist[n1].population);
@@ -254,7 +259,92 @@ void print_submenu(WINDOW *submenu, int input, int n, int n1, int n2)
                 wprintw(submenu, " ");
             wattroff(submenu, COLOR_PAIR(8));
         }
+        wprintw(submenu, "\n\n> GDP (100 Million Dollars)\n");
+        if (nationlist[n1].GDP > nationlist[n2].GDP)
+        {
+            wprintw(submenu, "%d\n", nationlist[n1].GDP);
+            wattron(submenu, COLOR_PAIR(3));
+            for (int i = 0; i < 20; i++)
+                wprintw(submenu, " ");
+            wattroff(submenu, COLOR_PAIR(3));
+            wprintw(submenu, "\n%d\n", nationlist[n2].GDP);
+            wattron(submenu, COLOR_PAIR(8));
+            if (20 * nationlist[n2].GDP / nationlist[n1].GDP == 0)
+                wprintw(submenu, " ");
+            for (int i = 0; i < 20 * nationlist[n2].GDP / nationlist[n1].GDP; i++)
+                wprintw(submenu, " ");
+            wattroff(submenu, COLOR_PAIR(8));
+        }
+        else
+        {
+            wprintw(submenu, "%d\n", nationlist[n1].GDP);
+            wattron(submenu, COLOR_PAIR(3));
+            if (20 * nationlist[n1].GDP / nationlist[n2].GDP == 0)
+                wprintw(submenu, " ");
+            for (int i = 0; i < 20 * nationlist[n1].GDP / nationlist[n2].GDP; i++)
+                wprintw(submenu, " ");
+            wattroff(submenu, COLOR_PAIR(3));
+            wprintw(submenu, "\n%d\n", nationlist[n2].GDP);
+            wattron(submenu, COLOR_PAIR(8));
+            for (int i = 0; i < 20; i++)
+                wprintw(submenu, " ");
+            wattroff(submenu, COLOR_PAIR(8));
+        }
+        wprintw(submenu, "\n\n> GDP per capital(Dollars)\n");
+        if (nationlist[n1].GDPpc > nationlist[n2].GDPpc)
+        {
+            wprintw(submenu, "%d\n", nationlist[n1].GDPpc);
+            wattron(submenu, COLOR_PAIR(3));
+            for (int i = 0; i < 20; i++)
+                wprintw(submenu, " ");
+            wattroff(submenu, COLOR_PAIR(3));
+            wprintw(submenu, "\n%d\n", nationlist[n2].GDPpc);
+            wattron(submenu, COLOR_PAIR(8));
+            if (20 * nationlist[n2].GDPpc / nationlist[n1].GDPpc == 0)
+                wprintw(submenu, " ");
+            for (int i = 0; i < 20 * nationlist[n2].GDPpc / nationlist[n1].GDPpc; i++)
+                wprintw(submenu, " ");
+            wattroff(submenu, COLOR_PAIR(8));
+        }
+        else
+        {
+            wprintw(submenu, "%d\n", nationlist[n1].GDPpc);
+            wattron(submenu, COLOR_PAIR(3));
+            if (20 * nationlist[n1].GDPpc / nationlist[n2].GDPpc == 0)
+                wprintw(submenu, " ");
+            for (int i = 0; i < 20 * nationlist[n1].GDPpc / nationlist[n2].GDPpc; i++)
+                wprintw(submenu, " ");
+            wattroff(submenu, COLOR_PAIR(3));
+            wprintw(submenu, "\n%d\n", nationlist[n2].GDPpc);
+            wattron(submenu, COLOR_PAIR(8));
+            for (int i = 0; i < 20; i++)
+                wprintw(submenu, " ");
+            wattroff(submenu, COLOR_PAIR(8));
+        }
+        wmove(submenu, 0, 0);
     }
     refresh();
     wrefresh(submenu);
+}
+
+void mysig(int signum)
+{
+    WINDOW *exitwin;
+    int c;
+    exitwin = newwin(8, 30, 10, 30);
+    wbkgd(exitwin, COLOR_PAIR(9));
+    box(exitwin, 0, 0);
+    mvwprintw(exitwin, 2, 2, "To EXIT, press SPACE.");
+    mvwprintw(exitwin, 4, 2, "To cancel, press q again.");
+    while (1)
+    {
+        c = wgetch(exitwin);
+        if (c == ' ')
+        {
+            endwin();
+            exit(0);
+        }
+        else if (c == 'q')
+            break;
+    }
 }
